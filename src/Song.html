@@ -4,7 +4,182 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Now Playing</title>
-    <link rel="stylesheet" href="TrackStyle.css">
+
+    <style>
+        * {
+            overflow: hidden;
+        }
+
+        body {
+            background: none;
+            padding: 0;
+            margin: 0;
+        }
+
+        #now-playing-container {
+            display: inline-block;
+            height: 270px;
+            width: 480px;
+            padding: 0;
+            white-space: nowrap;
+        }
+
+        /* ARTWORK */
+
+        #artwork-outer-container {
+            height: calc(270px - 64px);
+        }
+
+        #artwork-inner-container {
+            height: calc(270px - 64px);
+            width: 480px;
+            animation: show-artwork 500ms ease both;
+        }
+
+        #artwork-inner-container.hide {
+            animation: hide-artwork 500ms ease both !important;
+        }
+
+        #artwork {
+            display: block;
+            object-fit: contain;
+            width: 480px;
+            height: 480px;
+        }
+
+        #artwork.animate {
+            animation: pan-vertical 18s ease-in-out infinite alternate;
+        }
+
+        @keyframes show-artwork {
+            0% {
+                transform: translateY(270px);
+            }
+
+            100% {
+                transform: translateY(0%);
+            }
+        }
+
+        @keyframes hide-artwork {
+            0% {
+                transform: translateY(0%);
+            }
+
+            100% {
+                transform: translateY(270px);
+            }
+        }
+
+        @keyframes pan-vertical {
+            0% {
+                transform: translateY(0%);
+            }
+
+            100% {
+                transform: translateY(-270px);
+            }
+        }
+
+        /*END ARTWORK*/
+
+        /*ARTIST & TRACK*/
+
+        #track-artist-container {
+            color: #ffffff;
+            font-family: "proxima-nova", sans-serif;
+            background-color: #1e1e1e;
+            box-sizing: border-box;
+            display: inline-block;
+            height: 64px;
+            width: 100%;
+            padding: 8px 8px 8px 0;
+            animation: show-track-artist-container 500ms ease both;
+        }
+
+        #track-artist-container.hide {
+            animation: hide-track-artist-container 500ms ease both;
+        }
+
+        @keyframes show-track-artist-container {
+            0% {
+                transform: translateY(64px);
+            }
+
+            100% {
+                transform: translateY(0%);
+            }
+        }
+
+        @keyframes hide-track-artist-container {
+            0% {
+                transform: translateY(0%);
+            }
+
+            100% {
+                transform: translateY(64px);
+            }
+        }
+
+        #artist {
+            display: inline-block;
+            font-size: 16px;
+            padding-left: 8px;
+            animation: show-track-artist 500ms ease both;
+        }
+
+        #track.hide,
+        #artist.hide {
+            animation: hide-track-artist 500ms ease both !important;
+        }
+
+        #track {
+            display: inline-block;
+            font-size: 24px;
+            font-weight: bold;
+            padding-left: 8px;
+            animation: show-track-artist 500ms ease both;
+        }
+
+        @keyframes show-track-artist {
+            0% {
+                transform: translateX(-100%);
+            }
+
+            100% {
+                transform: translateX(0%);
+            }
+        }
+
+        @keyframes hide-track-artist {
+            0% {
+                transform: translateX(0%);
+            }
+
+            100% {
+                transform: translateX(-100%);
+            }
+        }
+
+        #track.marquee,
+        #artist.marquee {
+            animation: artist-track-marquee 12s linear infinite !important;
+        }
+
+        @keyframes artist-track-marquee {
+            0% {
+                transform: translateX(480px);
+            }
+
+            100% {
+                transform: translateX(calc(-100% - 16px));
+            }
+        }
+
+        /* END ARTIST & TRACK*/
+
+    </style>
+
     <script src="https://code.jquery.com/jquery-3.5.1.min.js"
             integrity="sha256-9/aliU8dGd2tb6OSsuzixeV4y/faTqgFtohetphbbj0=" crossorigin="anonymous"></script>
     <script>
@@ -13,6 +188,8 @@
         const animationDuration = 500;
 
         let isPlaying = false;
+
+        let isNewTrackId = true;
 
         let isNewAlbum = true;
         let isNewTrack = true;
@@ -27,7 +204,7 @@
             return $.get("Snip_TrackId.txt", function (newTrackId) {
                 newTrackId = newTrackId.replace(/&/g, "&amp;");
 
-                isNewTrack = trackId !== newTrackId;
+                isNewTrackId = trackId !== newTrackId;
 
                 trackId = newTrackId;
 
@@ -37,6 +214,11 @@
 
         function getNowPlaying() {
             return $.get("Snip_Metadata.json", function (data) {
+                try {
+                    data = JSON.parse(data);
+                } catch {
+                }
+
                 data = data.item || data;
 
                 let newTrack = data.name.replace(/&/g, "&amp;");
@@ -44,6 +226,7 @@
                 let newArtist = buildArtistDisplay(data.artists).replace(/&/g, "&amp;");
 
                 isNewAlbum = album !== newAlbum;
+                isNewTrack = track !== newTrack;
                 isNewArtist = artist !== newArtist;
 
                 album = newAlbum;
@@ -56,72 +239,75 @@
             let newArtist = "";
 
             for (let i = 0; i < artistArray.length; i++) {
-                newArtist += artistArray[i].name + ", ";
-            }
+                newArtist += artistArray[i].name;
 
-            newArtist = newArtist.substr(0, newArtist.length - 2);
+                if (i < artistArray.length - 1)
+                    newArtist += ", ";
+            }
 
             return newArtist;
         }
 
         function showArtist() {
             $("#artist").removeClass("hide");
+
+            const isArtistTooWide = $("#artist").outerWidth() > containerWidth;
+
+            if (isArtistTooWide)
+                $("#artist").addClass("marquee");
+            else
+                $("#artist").removeClass("marquee");
         }
 
         function hideArtist() {
             $("#artist").addClass("hide");
         }
 
+        function setArtist() {
+            $("#artist").html(artist);
+        }
+
         function refreshArtistDisplay() {
-            if (isNewArtist)
-                hideArtist();
+            hideArtist();
 
             setTimeout(function () {
-                $("#artist").html(artist);
+                setArtist();
 
-                const isArtistTooWide = $("#artist").outerWidth() > containerWidth;
-
-                if (isArtistTooWide)
-                    $("#artist").addClass("marquee");
-                else
-                    $("#artist").removeClass("marquee");
-
-                if (isPlaying)
-                    showArtist();
+                showArtist();
             }.bind(this), animationDuration);
         }
 
         function showTrack() {
             $("#track").removeClass("hide");
+
+            const isTrackTooWide = $("#track").outerWidth() > containerWidth;
+
+            if (isTrackTooWide)
+                $("#track").addClass("marquee");
+            else
+                $("#track").removeClass("marquee");
         }
 
         function hideTrack() {
             $("#track").addClass("hide");
         }
 
-        function refreshTrackDisplay() {
-            if (!isNewTrack)
-                return;
+        function setTrack() {
+            $("#track").html(track);
+        }
 
+        function refreshTrackDisplay() {
             hideTrack();
 
             setTimeout(function () {
-                $("#track").html(track);
+                setTrack();
 
-                const isTrackTooWide = $("#track").outerWidth() > containerWidth;
-
-                if (isTrackTooWide)
-                    $("#track").addClass("marquee");
-                else
-                    $("#track").removeClass("marquee");
-
-                if (isPlaying)
-                    showTrack();
+                showTrack();
             }.bind(this), animationDuration);
         }
 
         function showArtwork() {
-            $("#artwork").removeClass("hide");
+            $("#artwork-inner-container").removeClass("hide");
 
             setTimeout(function () {
                 $("#artwork").addClass("animate");
@@ -129,59 +315,66 @@
         }
 
         function hideArtwork() {
-            $("#artwork").addClass("hide");
+            $("#artwork-inner-container").addClass("hide");
 
             setTimeout(function () {
                 $("#artwork").removeClass("animate");
             }, animationDuration);
         }
 
+        function setArtwork() {
+            const path = "Snip_Artwork.jpg?" + Date.now();
+
+            $("#artwork").prop("src", path);
+        }
+
         function refreshArtworkDisplay() {
-            if (isPlaying && isNewAlbum)
-                hideArtwork();
+            hideArtwork();
 
             setTimeout(function () {
-                const path = "Snip_Artwork.jpg?" + Date.now();
+                setArtwork();
 
-                $("#artwork").prop("src", path);
-
-                if (isPlaying && isNewAlbum)
-                    showArtwork();
+                showArtwork();
             }, animationDuration);
         }
 
         function showAll() {
-            $("#now-playing-container, #track-artist-container").removeClass("hide");
+            $("#track-artist-container").removeClass("hide");
 
             setTimeout(function () {
                 showArtwork();
                 showTrack();
                 showArtist();
-            }, animationDuration);
+            }.bind(this), animationDuration);
         }
 
-        function hideAll() {
+        function hideAll(isStillPlaying) {
             hideArtwork();
             hideTrack();
             hideArtist();
 
-            setTimeout(function () {
-                $("#now-playing-container, #track-artist-container").addClass("hide");
-            }, animationDuration);
+            if (!isStillPlaying)
+                setTimeout(function () {
+                    $("#track-artist-container").addClass("hide");
+                }, animationDuration);
         }
 
         function checkNowPlaying() {
             checkIfTrackHasChanged().then(function () {
-                if (isPlaying && isNewTrack) {
+                if (isPlaying && isNewTrackId) {
                     getNowPlaying().then(function () {
-                        showAll();
+                        hideAll(isPlaying);
 
                         setTimeout(function () {
-                            refreshArtworkDisplay();
-                            refreshTrackDisplay();
-                            refreshArtistDisplay();
+                            setArtwork();
+                            setTrack();
+                            setArtist();
 
-                            checkNowPlaying();
+                            showAll();
+
+                            setTimeout(function () {
+                                checkNowPlaying();
+                            }.bind(this), animationDuration);
                         }.bind(this), animationDuration);
                     }.bind(this));
                 } else if (!isPlaying) {
@@ -205,8 +398,10 @@
 </head>
 <body>
 <div id="now-playing-container">
-    <div id="artwork-container">
-        <img id=artwork class="hide">
+    <div id="artwork-outer-container">
+        <div id="artwork-inner-container" class="hide">
+            <img id="artwork" />
+        </div>
     </div>
     <div id="track-artist-container" class="hide">
         <div id=track class="hide"></div>

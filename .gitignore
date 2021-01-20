@@ -218,5 +218,8 @@ fabric.properties
 # CodeStream plugin
 # https://plugins.jetbrains.com/plugin/12206-codestream
 
-# End of https://www.toptal.com/developers/gitignore/api/intellij,webstorm,rider
+# End of https://www.toptal.com/developers/gitignore/api/intellij,webstorm,rider\
+
+
 /src/Snip_Metadata.json
+/src/Snip_Artwork.jpg
