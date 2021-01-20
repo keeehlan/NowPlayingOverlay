@@ -14,19 +14,19 @@
 
         let isPlaying = false;
 
-        let isNewTrack = true;
-        let trackId = "";
-
-        let track = "";
-
         let isNewAlbum = true;
-        let album = "";
-
+        let isNewTrack = true;
         let isNewArtist = true;
+
+        let trackId = "";
+        let track = "";
+        let album = "";
         let artist = "";
 
-        function updateTrackId() {
+        function checkIfTrackHasChanged() {
             return $.get("Snip_TrackId.txt", function (newTrackId) {
+                newTrackId = newTrackId.replace(/&/g, "&amp;");
+
                 isNewTrack = trackId !== newTrackId;
 
                 trackId = newTrackId;
@@ -35,24 +35,33 @@
             }.bind(this));
         }
 
-        function updateArtist() {
-            return $.get("Snip_Artist.txt", function (newArtist) {
-                newArtist = newArtist.replace(/&/g, "&amp;");
+        function getNowPlaying() {
+            return $.get("Snip_Metadata.json", function (data) {
+                data = data.item || data;
 
-                isNewArtist = newArtist !== artist;
+                let newTrack = data.name.replace(/&/g, "&amp;");
+                let newAlbum = data.album.name.replace(/&/g, "&amp;");
+                let newArtist = buildArtistDisplay(data.artists).replace(/&/g, "&amp;");
 
-                artist = newArtist || artist;
+                isNewAlbum = album !== newAlbum;
+                isNewArtist = artist !== newArtist;
+
+                album = newAlbum;
+                track = newTrack;
+                artist = newArtist;
             }.bind(this));
         }
 
-        function updateTrack() {
-            return $.get("Snip_Track.txt", function (newTrack) {
-                newTrack = newTrack.replace(/&/g, "&amp;");
+        function buildArtistDisplay(artistArray) {
+            let newArtist = "";
 
-                isNewTrack = newTrack !== track;
+            for (let i = 0; i < artistArray.length; i++) {
+                newArtist += artistArray[i].name + ", ";
+            }
 
-                track = newTrack || track;
-            }.bind(this));
+            newArtist = newArtist.substr(0, newArtist.length - 2);
+
+            return newArtist;
         }
 
         function showArtist() {
@@ -82,12 +91,12 @@
             }.bind(this), animationDuration);
         }
 
-        function hideTrack() {
-            $("#track").addClass("hide");
-        }
-
         function showTrack() {
             $("#track").removeClass("hide");
+        }
+
+        function hideTrack() {
+            $("#track").addClass("hide");
         }
 
         function refreshTrackDisplay() {
@@ -111,20 +120,6 @@
             }.bind(this), animationDuration);
         }
 
-        function refreshAlbumDisplay() {
-            if (isPlaying && isNewAlbum)
-                hideArtwork();
-
-            setTimeout(function () {
-                const path = "Snip_Artwork.jpg?t=" + track + artist;
-
-                $("#artwork").prop("src", path);
-
-                if (isPlaying && isNewAlbum)
-                    showArtwork();
-            }, animationDuration);
-        }
-
         function showArtwork() {
             $("#artwork").removeClass("hide");
 
@@ -138,6 +133,20 @@
 
             setTimeout(function () {
                 $("#artwork").removeClass("animate");
+            }, animationDuration);
+        }
+
+        function refreshArtworkDisplay() {
+            if (isPlaying && isNewAlbum)
+                hideArtwork();
+
+            setTimeout(function () {
+                const path = "Snip_Artwork.jpg?" + Date.now();
+
+                $("#artwork").prop("src", path);
+
+                if (isPlaying && isNewAlbum)
+                    showArtwork();
             }, animationDuration);
         }
 
@@ -161,33 +170,19 @@
             }, animationDuration);
         }
 
-        function updateAlbum() {
-            return $.get("Snip_Album.txt", function (newAlbum) {
-                newAlbum = newAlbum.replace(/&/g, "&amp;");
-
-                isNewAlbum = newAlbum !== album;
-
-                album = newAlbum;
-            }.bind(this));
-        }
-
         function checkNowPlaying() {
-            updateTrackId().then(function () {
+            checkIfTrackHasChanged().then(function () {
                 if (isPlaying && isNewTrack) {
-                    updateArtist().then(function () {
-                        updateTrack().then(function () {
-                            updateAlbum().then(function () {
-                                showAll();
+                    getNowPlaying().then(function () {
+                        showAll();
 
-                                setTimeout(function () {
-                                    refreshAlbumDisplay();
-                                    refreshTrackDisplay();
-                                    refreshArtistDisplay();
+                        setTimeout(function () {
+                            refreshArtworkDisplay();
+                            refreshTrackDisplay();
+                            refreshArtistDisplay();
 
-                                    checkNowPlaying();
-                                }.bind(this), animationDuration);
-                            }.bind(this));
-                        }.bind(this));
+                            checkNowPlaying();
+                        }.bind(this), animationDuration);
                     }.bind(this));
                 } else if (!isPlaying) {
                     hideAll();
