@@ -10,4 +10,9 @@ While Zyphen's version supports Tuna, I have modified mine in such a way that it
 3. Right-click the Snip icon in your Notification Area (a.k.a. System Tray), and ensure your settings match this: ![Snip settings](https://i.imgur.com/NuGh999.png)
 
 ## Overlay Instructions
-1. 
+1. Download my [latest release](https://github.com/kehlankrumme/NowPlayingOverlay/releases/latest).
+2. Move `Song.html` into the same folder as `Snip.exe`.
+
+## Open Broadcaster Software Instructions
+1. Add a Browser source.
+2. Ensure that the settings match this: ![Browser source settings](https://i.imgur.com/I5AEBFu.png)
