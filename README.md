@@ -7,7 +7,8 @@ While Zyphen's version supports Tuna, I have modified mine in such a way that it
 ## Snip Instructions
 1. Download & install [Snip](https://github.com/dlrudie/Snip).
 2. Run & authorize it with your Spotify account.
-3. Right-click the Snip icon in your Notification Area (a.k.a. System Tray), and ensure your settings match this: ![Snip settings](https://i.imgur.com/NuGh999.png)
+3. Right-click the Snip icon in your Notification Area (a.k.a. System Tray), and ensure your settings match this: 
+![Snip settings](https://i.imgur.com/NuGh999.png)
 
 ## Overlay Instructions
 1. Download my [latest release](https://github.com/kehlankrumme/NowPlayingOverlay/releases/latest).
@@ -15,4 +16,5 @@ While Zyphen's version supports Tuna, I have modified mine in such a way that it
 
 ## Open Broadcaster Software Instructions
 1. Add a Browser source.
-2. Ensure that the settings match this: ![Browser source settings](https://i.imgur.com/I5AEBFu.png)
+2. Ensure that the settings match this: 
+![Browser source settings](https://i.imgur.com/I5AEBFu.png)
