@@ -17,6 +17,6 @@ While Zyphen's version supports Tuna, I have modified mine in such a way that it
 
 ## Open Broadcaster Software Instructions
 1. Add a Browser source.
-2. Ensure that the settings match this: 
+2. Your settings should look like this, just make sure that `Local File` matches the path to `Song.html` in your Snip folder: 
 
 ![Browser source settings](https://i.imgur.com/I5AEBFu.png)
