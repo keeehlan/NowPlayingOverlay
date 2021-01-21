@@ -6,6 +6,8 @@ A very simple, clean, & animated music overlay. (based on [Zyphen's Now Playing 
 
 While Zyphen's version supports Tuna, I have modified mine in such a way that it only supports Snip. I might update the overlay in the future, but for now, only Snip is supported.
 
+The JavaScript that makes this work is pretty messy. Try not to look at it too closely.
+
 ## Snip Instructions
 1. Download & install [Snip](https://github.com/dlrudie/Snip).
 2. Run & authorize it with your Spotify account.
