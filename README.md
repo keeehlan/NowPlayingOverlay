@@ -15,6 +15,8 @@ The JavaScript that makes this work is pretty messy. Try not to look at it too c
 
 ![Snip settings](https://i.imgur.com/NuGh999.png)
 
+Snip is **not perfect.** If your overlay is acting strange, the easiest fix is to stop Snip and run it again. Sometimes it also helps if you pause and play your music to force an update of the metadata.
+
 ## Overlay Instructions
 1. Download my [latest release](https://github.com/kehlankrumme/NowPlayingOverlay/releases/latest).
 2. Move `Song.html` into the same folder as `Snip.exe`.
