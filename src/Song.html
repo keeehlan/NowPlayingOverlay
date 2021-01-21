@@ -48,7 +48,7 @@
         }
 
         #artwork.animate {
-            animation: pan-vertical 18s ease-in-out infinite alternate;
+            animation: pan-vertical 20s ease-in-out infinite alternate;
         }
 
         @keyframes show-artwork {
@@ -163,7 +163,7 @@
 
         #track.marquee,
         #artist.marquee {
-            animation: artist-track-marquee 12s linear infinite !important;
+            animation: artist-track-marquee 10s linear infinite !important;
         }
 
         @keyframes artist-track-marquee {
@@ -225,9 +225,9 @@
                 let newAlbum = data.album.name.replace(/&/g, "&amp;");
                 let newArtist = buildArtistDisplay(data.artists).replace(/&/g, "&amp;");
 
-                isNewAlbum = album !== newAlbum;
-                isNewTrack = track !== newTrack;
-                isNewArtist = artist !== newArtist;
+                isNewAlbum = newAlbum && album !== newAlbum;
+                isNewTrack = newTrack && track !== newTrack;
+                isNewArtist = newArtist && artist !== newArtist;
 
                 album = newAlbum;
                 track = newTrack;
@@ -267,16 +267,6 @@
             $("#artist").html(artist);
         }
 
-        function refreshArtistDisplay() {
-            hideArtist();
-
-            setTimeout(function () {
-                setArtist();
-
-                showArtist();
-            }.bind(this), animationDuration);
-        }
-
         function showTrack() {
             $("#track").removeClass("hide");
 
@@ -296,16 +286,6 @@
             $("#track").html(track);
         }
 
-        function refreshTrackDisplay() {
-            hideTrack();
-
-            setTimeout(function () {
-                setTrack();
-
-                showTrack();
-            }.bind(this), animationDuration);
-        }
-
         function showArtwork() {
             $("#artwork-inner-container").removeClass("hide");
 
@@ -317,25 +297,16 @@
         function hideArtwork() {
             $("#artwork-inner-container").addClass("hide");
 
-            setTimeout(function () {
-                $("#artwork").removeClass("animate");
-            }, animationDuration);
+            if (isPlaying && isNewAlbum)
+                setTimeout(function () {
+                    $("#artwork").removeClass("animate");
+                }, animationDuration);
         }
 
         function setArtwork() {
             const path = "Snip_Artwork.jpg?" + Date.now();
 
             $("#artwork").prop("src", path);
-        }
-
-        function refreshArtworkDisplay() {
-            hideArtwork();
-
-            setTimeout(function () {
-                setArtwork();
-
-                showArtwork();
-            }, animationDuration);
         }
 
         function showAll() {
@@ -348,12 +319,17 @@
             }.bind(this), animationDuration);
         }
 
-        function hideAll(isStillPlaying) {
-            hideArtwork();
-            hideTrack();
-            hideArtist();
+        function hideAll() {
+            if (!isPlaying || isNewAlbum)
+                hideArtwork();
 
-            if (!isStillPlaying)
+            if (isPlaying && isNewTrack)
+                hideTrack();
+
+            if (isPlaying && isNewArtist)
+                hideArtist();
+
+            if (!isPlaying)
                 setTimeout(function () {
                     $("#track-artist-container").addClass("hide");
                 }, animationDuration);
@@ -363,7 +339,7 @@
             checkIfTrackHasChanged().then(function () {
                 if (isPlaying && isNewTrackId) {
                     getNowPlaying().then(function () {
-                        hideAll(isPlaying);
+                        hideAll();
 
                         setTimeout(function () {
                             setArtwork();
@@ -400,7 +376,7 @@
 <div id="now-playing-container">
     <div id="artwork-outer-container">
         <div id="artwork-inner-container" class="hide">
-            <img id="artwork" />
+            <img id="artwork" class="animate"/>
         </div>
     </div>
     <div id="track-artist-container" class="hide">
