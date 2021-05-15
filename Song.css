@@ -1,0 +1,130 @@
+* {
+    overflow: hidden;
+}
+
+body {
+    height: 64px;
+    width: 100%;
+    max-width: 480px;
+    font-size: 0;
+    padding: 0;
+    white-space: nowrap;
+    margin: 0;
+    color: #ffffff;
+    font-family: "proxima-nova", sans-serif;
+    background-color: transparent;
+    box-sizing: border-box;
+    display: inline-block;
+    animation: show-now-playing-container 500ms ease both;
+}
+
+body.hide {
+    animation: hide-now-playing-container 500ms ease both;
+}
+
+#artwork {
+    display: inline-block;
+    line-height: 0;
+}
+
+#info {
+    display: inline-block;
+    height: 100%;
+    width: calc(100% - 64px);
+    text-shadow: 2px 2px rgba(0, 0, 0, 0.5);
+}
+
+#track {
+    display: inline-block;
+    font-size: 24px;
+    font-weight: bold;
+    padding: 8px 2px 0 8px;
+    animation: show-now-playing 500ms ease both;
+}
+
+#artist {
+    display: inline-block;
+    font-size: 16px;
+    padding: 4px 2px 0 8px;
+    animation: show-now-playing 500ms ease both;
+}
+
+#track.hide,
+#artist.hide {
+    animation: hide-now-playing 500ms ease both !important;
+}
+
+#track.marquee,
+#artist.marquee {
+    animation: artist-track-marquee 6s linear infinite !important;
+}
+
+@keyframes show-artwork {
+    0% {
+        transform: translateY(100%);
+    }
+
+    100% {
+        transform: translateY(0%);
+    }
+}
+
+@keyframes hide-artwork {
+    0% {
+        transform: translateY(0%);
+    }
+
+    100% {
+        transform: translateY(100%);
+    }
+}
+
+@keyframes show-now-playing-container {
+    0% {
+        transform: translateY(100%);
+    }
+
+    100% {
+        transform: translateY(0%);
+    }
+}
+
+@keyframes hide-now-playing-container {
+    0% {
+        transform: translateY(0%);
+    }
+
+    100% {
+        transform: translateY(100%);
+    }
+}
+
+@keyframes show-now-playing {
+    0% {
+        transform: translateX(-100%);
+    }
+
+    100% {
+        transform: translateX(0%);
+    }
+}
+
+@keyframes hide-now-playing {
+    0% {
+        transform: translateX(0%);
+    }
+
+    100% {
+        transform: translateX(-100%);
+    }
+}
+
+@keyframes artist-track-marquee {
+    0% {
+        transform: translateX(calc(100vw - 64px));
+    }
+
+    100% {
+        transform: translateX(calc(-100%));
+    }
+}
